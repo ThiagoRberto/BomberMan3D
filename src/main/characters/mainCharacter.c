@@ -120,6 +120,31 @@ void eyes() {
     glPopMatrix();
 }
 
+void hat() {
+    glPushMatrix();
+    glTranslatef(0.0, 0.65, 0.0);
+    glScalef(0.4, 0.3, 0.3);
+    glRotatef(-120, 1.0, 0.0, 0.0);
+    glTranslatef(0.0, 0.0, 0.0);
+    glutSolidCone(0.3, 0.9, 20, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(1.0, 0.4, 0.4);
+    glTranslatef(0.0, 0.9, -0.15);
+    glutSolidSphere(0.05, 20, 10);
+    glPopMatrix();
+}
+
+void face() {
+    glPushMatrix();
+    glColor3f(1.0, 0.6, 0.4);
+    glTranslatef(0.0, 0.65, 0.13);
+    glScalef(0.47, 0.37, 0.08);
+    glutSolidSphere(0.25, 20, 10);
+    glPopMatrix();
+}
+
 void head() {
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
@@ -128,14 +153,16 @@ void head() {
     glTranslatef(0.0, 0.0, 0.0);
     glutSolidSphere(0.5, 20, 10);
     glPopMatrix();
+    hat();
     eyes();
+    face();
 }
 
 void body() {
     glPushMatrix();
     glColor3f(0.4, 0.4, 0.7);
     glTranslatef(0.0, 0.25, 0.0);
-    glScalef(0.3, 0.4, 0.3);
+    glScalef(0.3, 0.45, 0.3);
     glTranslatef(0.0, 0.25, 0.0);
     glutSolidSphere(0.5, 20, 10);
     glPopMatrix();
