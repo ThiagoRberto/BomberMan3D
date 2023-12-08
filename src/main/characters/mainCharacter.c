@@ -8,6 +8,7 @@ float x_angle = 0.0;
 float y_angle = 0.0;
 float theta = 0.0;
 
+GLUquadricObj* quadratic;
 
 float x = 0.0;
 float y = 0.0;
@@ -60,7 +61,7 @@ void init(void)
     glLoadIdentity(); //carrega a matrix de identidade
     gluPerspective(25.0, 1.0, 2.0, 8.0); //define uma projeção perspectiva
     glViewport(0, 0, 500, 500);
-
+    quadratic = gluNewQuadric();
     lightning();
 }
 
@@ -158,6 +159,16 @@ void head() {
     face();
 }
 
+void belt() {
+    glPushMatrix();
+    glColor3f(0.0, 0.0, 0.0);
+    glTranslatef(0.0, 0.25, 0.0);
+    glRotatef(90, 1, 0.0, 0.0);
+    glScalef(1.5, 1.65, 0.8);
+    glutSolidTorus(0.05, 0.05, 20, 10);
+    glPopMatrix();
+}
+
 void body() {
     glPushMatrix();
     glColor3f(0.4, 0.4, 0.7);
@@ -166,6 +177,7 @@ void body() {
     glTranslatef(0.0, 0.25, 0.0);
     glutSolidSphere(0.5, 20, 10);
     glPopMatrix();
+    belt();
 }
 
 void hand() {
@@ -176,6 +188,22 @@ void hand() {
     glPopMatrix();
 }
 
+void shoulder() {
+    glPushMatrix();
+    glTranslatef(-0.14, -0.05, 0.0);
+    glScalef(1.3, 1.0, 1.15);
+    glutSolidSphere(0.045, 20, 10);
+    glPopMatrix();
+}
+
+void elbow() {
+    glPushMatrix();
+    glTranslatef(-0.07, -0.21, 0.0);
+    glutSolidSphere(0.027, 20, 10);
+    glPopMatrix();
+}
+
+
 void rightArm() {
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
@@ -185,8 +213,10 @@ void rightArm() {
     glRotatef(20, 0.0, 0.0, 1.0);
     glTranslatef(0.1, -0.05, 0.0);
     glScalef(0.1, 0.175, 0.1);
-    glTranslatef(-0.2, -1, 0.0);
-    glutSolidSphere(0.5, 20, 10);
+    glTranslatef(-0.2, -0.5, 0.0);
+    //glutSolidSphere(0.5, 20, 10);
+    glRotatef(90, 1, 0.0, 0.0);
+    gluCylinder(quadratic, 0.5, 0.3, 1, 20, 10);
     glPopMatrix();
 
     glPushMatrix();
@@ -195,12 +225,16 @@ void rightArm() {
     glRotatef(theta, 1.5, 0.0, 0.0);
     glTranslatef(0.25, -0.05, 0.0);
     glRotatef(theta, 2, 0.0, 0.0);
+    shoulder();
+    elbow();
     hand();
     glColor3f(1.0, 1.0, 1.0);
     glRotatef(20, -0.6, -0.5, 0.5);
     glScalef(0.1, 0.225, 0.1);
-    glTranslatef(-1, -1.1, -0.15);
-    glutSolidSphere(0.5, 10, 10);
+    glTranslatef(-1.1, -0.85, -0.3);
+    //glutSolidSphere(0.5, 10, 10);
+    glRotatef(90, 1, 0.0, 0.0);
+    gluCylinder(quadratic, 0.3, 0.25, 1, 20, 10);
     glPopMatrix();
 }
 
@@ -215,9 +249,25 @@ void leftArm() {
 void feet() {
     glPushMatrix();
     glColor3f(1.0, 0.4, 0.4);
-    glTranslatef(0.1, -0.5, 0.025);
+    glTranslatef(0.1, -0.5, 0.075);
     glScalef(1.0, 0.65, 1.4);
     glutSolidSphere(0.1, 20, 10);
+    glPopMatrix();
+}
+
+void thigh() {
+    glPushMatrix();
+    glTranslatef(0.06, -0.1, 0.0);
+    glScalef(1.17, 1.0, 1.1);
+    glutSolidSphere(0.045, 20, 10);
+    glPopMatrix();
+}
+
+void knee() {
+    glPushMatrix();
+    glTranslatef(0.085, -0.26, 0.0);
+    glScalef(1.5, 1.0, 1.5);
+    glutSolidSphere(0.025, 20, 10);
     glPopMatrix();
 }
 
@@ -234,22 +284,29 @@ void rightLeg() {
     glTranslatef(0.015, -0.225, 0.0);
     glRotatef(-thetaLegs, 1.5, 0.0, 0.0);
     glScalef(0.11, 0.3, 0.11);
-    glTranslatef(0.3, 0.25, 0.25);
-    glutSolidSphere(0.5, 20, 10);
+    glTranslatef(0.3, 0.35, 0.0);
+    //glutSolidSphere(0.5, 20, 10);
+    glRotatef(thetaLegs, 1.0, 0.0, 0.0);
+    glRotatef(90, 1, 0.0, 0.0);
+    gluCylinder(quadratic, 0.5, 0.35, 0.5, 20, 10);
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef(0.0, 0.25, 0.0);
 
     glRotatef(thetaLegs, 1.0, 0.0, 0.0);
+    thigh();
+    knee();
     feet();
     glColor3f(1.0, 1.0, 1.0);
 
     glRotatef(7.5, 0, 0, 1);
-    glTranslatef(0.015, -0.44, 0.0);
+    glTranslatef(0.015, -0.37, 0.0);
     glScalef(0.1, 0.375, 0.125);
-    glTranslatef(0.25, 0.25, 0.25);
-    glutSolidSphere(0.5, 20, 10);
+    glTranslatef(0.35, 0.25, 0.0);
+    //glutSolidSphere(0.5, 20, 10);
+    glRotatef(90, 1, 0.0, 0.0);
+    gluCylinder(quadratic, 0.35, 0.3, 0.5, 20, 10);
     glPopMatrix();
 
 }
