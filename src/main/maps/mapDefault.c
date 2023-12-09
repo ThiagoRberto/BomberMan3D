@@ -346,7 +346,7 @@ void DrawMap(){
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27:
-        //ESC = iskljucivanje aplikacije
+        //ESC = Exit
             glDeleteTextures(3, names);
             exit(0);
             break;
@@ -372,7 +372,8 @@ void display(){
 			  7, 0, 5,
 			  0, 1, 0);
 
-	glBindTexture(GL_TEXTURE_2D, names[0]);
+    // Floor
+    glBindTexture(GL_TEXTURE_2D, names[0]);
     glBegin(GL_QUADS);
         glNormal3f(0, 0, 1);
 
@@ -437,11 +438,10 @@ int main(int argc, char** argv){
 	glutCreateWindow(argv[0]);
 
 	glutDisplayFunc(display);
-  glutReshapeFunc(reshape);
+    glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
-	// glutKeyboardUpFunc(on_keyboardUp);
 	
-  init();
+    init();
 
 	glutMainLoop();
 	
