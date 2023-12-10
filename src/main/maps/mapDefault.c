@@ -437,10 +437,10 @@ int main(int argc, char** argv){
 	glutCreateWindow(argv[0]);
 
 	glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
+  glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	
-    init();
+  init();
 
 	glutMainLoop();
 	

@@ -7,7 +7,7 @@ typedef struct{
 	float x;
 	float z;
 	int direction;
-	int p;
+	int alive;
 }SphereWithSpikes;;
 
 GLfloat x = 0.0f;
@@ -181,15 +181,6 @@ void drawSphereWithSpikes(float i, float j) {
 	glDisable(GL_TEXTURE_2D);
 }
 
-// void reshape(int width, int height){
-//     glViewport(0, 0, width, height);
-    
-//     glMatrixMode(GL_PROJECTION);
-//     glLoadIdentity();
-//     gluPerspective(60, (float)width/height, 1, 100);
-//     // glutFullScreen();
-// }
-
 void keyboard(int key, int x, int y){
     switch (key){
         case GLUT_KEY_UP:
@@ -229,24 +220,10 @@ void mouse(int button, int state, int x, int y){
 void display(){	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	// gluLookAt(7, 15, 10,
-	// 		  7, 0, 5,
-	// 		  0, 1, 0);
-
     glOrtho(-1.0,1.0,-1.0,1.0,-1.0,1.0);
 
-	// glPushMatrix();
-	// 	glColor3f(.95,.95,.1);
-	// 	if(sphereWithSpikes.p){
-	// 		glPushMatrix();
-	// 			drawSphereWithSpikes(sphereWithSpikes.x/10,sphereWithSpikes.z/10);
-	// 		glPopMatrix();
-	// 	}
-	// glPopMatrix();
-
     glPushMatrix();
-        glRotatef(90, 0.0, 1.0, 0.0);
-        // glTranslatef(sphereWithSpikes.x, 0, sphereWithSpikes.z);    
+        glRotatef(90, 0.0, 1.0, 0.0); 
         glTranslatef(x, y, 0);
         glRotatef(theta, 0.0, 1.0, 0.0);
         glRotatef(alfa, 1.0, 0.0, 0.0);
@@ -264,10 +241,6 @@ void init(){
 	glLoadIdentity();
 
 	loadTexture(); 
-
-    // srand(time(0));
-    // sphereWithSpikes.direction = rand()%4;
-	// sphereWithSpikes.p = 1;  
 }
 
 int main(int argc, char** argv){
