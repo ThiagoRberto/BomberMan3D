@@ -20,7 +20,7 @@ GLuint textureID;
 
 void loadTexture() {
     textureID = SOIL_load_OGL_texture(
-        "../Texture/spike.jpg",
+        "./src/main/Texture/spike.jpg",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_INVERT_Y

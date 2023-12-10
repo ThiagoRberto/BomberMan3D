@@ -131,10 +131,9 @@ void image_read(Image *image, char *filename) {
 #include <GL/glut.h>
 #include <time.h>
 
-#define PI 3.14159265358979323846
-#define FLOOR "../Texture/grass.bmp"
-#define BOX "../Texture/crate.bmp"
-#define WALL "../Texture/graybrick.bmp"
+#define FLOOR "./src/main/Texture/grass.bmp"
+#define BOX "./src/main/Texture/crate.bmp"
+#define WALL "./src/main/Texture/graybrick.bmp"
 
 static GLuint names[3];
 
