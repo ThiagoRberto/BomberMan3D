@@ -834,21 +834,55 @@ void explosion(int x, int y){
 	}
 }
 
-void draw_bomb(){
+void cover() {
     glPushMatrix();
-	    if(bomba.bomb_pump > 100){
-		    explosion(bomba.x,bomba.z);
-		    if(bomba.bomb_pump >= 130){
-			    bomba.bomb_pump = 0;
-			    bomba.ind = 0;
-			    bomba.x = -1;
-			    bomba.z = -1;
-			}
-		} else {
-		    glTranslatef(bomba.x,0.5,bomba.z);
-		    glColor3f(.7,0,0);
-		    glutSolidSphere(0.4+cos((bomba.bomb_pump)/5)*0.05,20,20);
-		}
+    glScalef(1.0, 0.1, 1.0);
+    glutSolidSphere(0.15, 15, 15);
+    glPopMatrix();
+}
+
+void wick() {
+    glPushMatrix();
+    glColor3f(0.2, 0.0, 0.0);
+    glTranslatef(0.0, 0.0, -0.15);
+    gluCylinder(quadratic, 0.02, 0.02, 0.2, 20, 10);
+    glPopMatrix();
+}
+
+void bodyDetail() {
+    glPushMatrix();
+    glTranslatef(0.0, 0.55, 0.0);
+    cover();
+    glRotatef(90, 1, 0.0, 0.0);
+    gluCylinder(quadratic, 0.15, 0.15, 0.1, 20, 10);
+    wick();
+    glPopMatrix();
+}
+
+void body() {
+    glPushMatrix();
+    glColor3f(red, 0.1, 0.1);
+    glutSolidSphere(0.5, 30, 30);
+    glPopMatrix();
+    bodyDetail();
+}
+
+void draw_bomb() {
+    glPushMatrix();
+        if(bomba.bomb_pump > 100){
+            explosion(bomba.x,bomba.z);
+            if(bomba.bomb_pump >= 130){
+                bomba.bomb_pump = 0;
+                bomba.ind = 0;
+                bomba.x = -1;
+                bomba.z = -1;
+            }
+        } else {
+            glTranslatef(bomba.x,0.5,bomba.z);
+            glColor3f(.7, 0, 0);
+            glScalef(1.0 + cos((bomba.bomb_pump) / 5) * 0.05, 1.0 + cos((bomba.bomb_pump) / 5) * 0.05, 1.0 + cos((bomba.bomb_pump) / 5) * 0.05);
+            body();
+        }
     glPopMatrix();
 }
 
