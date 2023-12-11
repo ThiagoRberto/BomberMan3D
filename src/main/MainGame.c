@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <time.h>
 #include <assert.h>
 #include <GL/glut.h>
@@ -17,6 +18,7 @@
 #define EXPLOSION "./src/main/Texture/explosion.bmp"
 
 int game_over = 0;
+float gametime = 300;
 
 float sphereWithSpikes_count = 0;
 float animation_ongoing = 0;
@@ -888,6 +890,95 @@ void draw_bomb() {
 
 // =================================== FIM =================================== //
 
+// =================================== SCORE E GAME OVER =================================== //
+
+static void draw_score() {
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+		gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+		char* word = malloc(30);
+		sprintf(word,"Score: %d", (int)gametime);
+		const int x = -500;
+		const int y = 800;
+		const int z = 0;
+		glPushMatrix();
+			glScalef(0.06,0.06,5);
+			glPushAttrib(GL_LINE_BIT);
+			  glLineWidth(4);
+				int len;
+				glDisable(GL_LIGHTING);
+				glColor3f(1,0,0);
+				glScalef(0.01,0.01,5);
+				glTranslatef(x,y,z);
+				len = strlen(word);
+				for (int i = 0; i < len; i++) {
+					glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, word[i]);
+				}
+				glEnable(GL_LIGHTING);
+			glPopAttrib();
+		glPopMatrix();
+		free(word);
+	//glPopMatrix();
+}
+
+static void draw_game_over(char* word, int pob){   
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+    int x = -500;
+    int y = 0;
+    int z = 0;
+
+    char* over_game = malloc(30);
+    if(pob == 0)
+		sprintf(over_game,"Game over!");
+    else
+        sprintf(over_game,"Victory!");
+    glPushMatrix();
+        glScalef(0.06,0.06,5);
+        glPushAttrib(GL_LINE_BIT);
+            glLineWidth(4);
+            int len;
+			glDisable(GL_LIGHTING);
+			glColor3f(1,0,0);
+			glScalef(0.01,0.01,5);
+			glTranslatef(x,y,z);
+			len = strlen(over_game);
+			for (int i = 0; i < len; i++){
+				glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, over_game[i]);
+			}
+			free(over_game);
+			glEnable(GL_LIGHTING);
+        glPopAttrib();
+    glPopMatrix();
+
+    glPushMatrix();
+        glScalef(0.06,0.06,5);
+        glPushAttrib(GL_LINE_BIT);
+            glLineWidth(4);
+            if(game_over == 2){
+				x-=550;
+			} else if(game_over == 1){
+				x-=200;
+			} else if(game_over == 3){
+				x-=0;
+			} else x-=300;
+            y-=200;
+			glDisable(GL_LIGHTING);
+			glColor3f(1,0,0);
+			glScalef(0.006,0.006,5);
+			glTranslatef(x,y,z);
+			len = strlen(word);
+			for (int i = 0; i < len; i++) {
+				glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, word[i]);
+			}
+			glEnable(GL_LIGHTING);
+        glPopAttrib();
+    glPopMatrix();
+}
+
+// =================================== FIM =================================== //
+
 // =================================== MAP =================================== //
 
 void RandomWalls(void){
@@ -1034,7 +1125,17 @@ void EnemyWalk(SphereWithSpikes* sphereWithSpikes){
 }
 
 void Timer(int id){
-	id = ID;
+    id = ID;
+
+    gametime -= 0.025;
+	if (gametime <= 0) {
+		game_over = 3;
+		animation_ongoing = 0;
+	}
+	else if (sphereWithSpikes1.alive == 0 && sphereWithSpikes2.alive == 0) {
+		game_over = 1;
+		animation_ongoing = 0;
+	}
 	
 	if(id != 0){
 		if(move == 45)
@@ -1320,63 +1421,87 @@ void reshape(int width, int height){
     glutFullScreen();
 }
 
-void display(){	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	gluLookAt(7, 15, 10, 7, 0, 5, 0, 1, 0);
+void display() {
+    if(game_over!=0) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        animation_ongoing = 0;
+        switch(game_over) {
+            case 1:{
+                char* word = malloc(20);
+                sprintf(word,"Score: %d",(int)gametime);
+                draw_game_over(word,1);
+                free(word);}
+                break;
+            case 2:
+                draw_game_over("Enemy has eaten you",0);
+                break;
+            case 3:
+                draw_game_over("Timed out",0);
+                break;
+            case 4:
+                draw_game_over("Bomb blew you up",0);
+                break;
+        }
+    } else {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+        draw_score();
+        
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        
+        gluLookAt(7, 15, 10, 7, 0, 5, 0, 1, 0);
 
-    //Base do Mapa
-	glBindTexture(GL_TEXTURE_2D, names[0]);
-    glBegin(GL_QUADS);
-        glNormal3f(0, 0, 1);
+        //Base do Mapa
+        glBindTexture(GL_TEXTURE_2D, names[0]);
+        glBegin(GL_QUADS);
+            glNormal3f(0, 0, 1);
 
-        glTexCoord2f(0, 0);
-        glVertex3f(-1, 0, -1);
+            glTexCoord2f(0, 0);
+            glVertex3f(-1, 0, -1);
 
-        glTexCoord2f(6, 0);
-        glVertex3f(15, 0, -1);
+            glTexCoord2f(6, 0);
+            glVertex3f(15, 0, -1);
 
-        glTexCoord2f(6, 6);
-        glVertex3f(15, 0, 11);
+            glTexCoord2f(6, 6);
+            glVertex3f(15, 0, 11);
 
-        glTexCoord2f(0, 6);
-        glVertex3f(-1, 0, 11);
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
+            glTexCoord2f(0, 6);
+            glVertex3f(-1, 0, 11);
+        glEnd();
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-	glPushMatrix();
-		DrawMap();
-    glPopMatrix();
-    glDisable(GL_TEXTURE_2D);
-
-    glPushMatrix();
-        Bomberman(0.1, 0.1, 0.1);
-    glPopMatrix();
-
-    if(bomba.ind == 1){
         glPushMatrix();
-        glColor3f(0.7, 0, 0);
-        draw_bomb();
+            DrawMap();
+        glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
+
+        glPushMatrix();
+            Bomberman(0.1, 0.1, 0.1);
+        glPopMatrix();
+
+        if(bomba.ind == 1){
+            glPushMatrix();
+            glColor3f(0.7, 0, 0);
+            draw_bomb();
+            glPopMatrix();
+        }
+
+        glPushMatrix();
+            if(sphereWithSpikes1.alive){
+                glPushMatrix();
+                    drawSphereWithSpikes(sphereWithSpikes1.x/10, sphereWithSpikes1.z/10);
+                glPopMatrix();
+            }
+            if(sphereWithSpikes2.alive){
+                glPushMatrix();
+                    drawSphereWithSpikes(sphereWithSpikes2.x/10, sphereWithSpikes2.z/10);
+                glPopMatrix();
+            }
         glPopMatrix();
     }
 
-    glPushMatrix();
-		if(sphereWithSpikes1.alive){
-			glPushMatrix();
-				drawSphereWithSpikes(sphereWithSpikes1.x/10, sphereWithSpikes1.z/10);
-			glPopMatrix();
-		}
-		if(sphereWithSpikes2.alive){
-			glPushMatrix();
-				drawSphereWithSpikes(sphereWithSpikes2.x/10, sphereWithSpikes2.z/10);
-			glPopMatrix();
-		}
-	glPopMatrix();
-		
-	glutSwapBuffers();
+    glutSwapBuffers();
 }
 
 void init(){
