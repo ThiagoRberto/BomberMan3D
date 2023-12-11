@@ -1,4 +1,5 @@
 // =================================== IMAGE =================================== //
+#include <GL/gl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -13,11 +14,15 @@
 #define FLOOR "./src/main/Texture/grass.bmp"
 #define BOX "./src/main/Texture/crate.bmp"
 #define WALL "./src/main/Texture/graybrick.bmp"
+#define EXPLOSION "./src/main/Texture/explosion.bmp"
+
+int game_over = 0;
 
 float sphereWithSpikes_count = 0;
 float animation_ongoing = 0;
 
-static GLuint names[3];
+static GLuint names[4];
+static int destroy_block[17][13];
 
 typedef struct {
   unsigned short type;
@@ -178,6 +183,15 @@ void InitializeTexture(){
     image_read(image, WALL);
 
     glBindTexture(GL_TEXTURE_2D, names[2]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    image_read(image, EXPLOSION);
+
+    glBindTexture(GL_TEXTURE_2D, names[3]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -723,11 +737,124 @@ void Bomberman(float r, float g, float b) {
     glPopMatrix();
 }
 
+// =================================== FIM ===================================
+
+// =================================== BOMBA ===================================
+
+typedef struct{
+	int x;
+	int z;
+	int ind;
+	float bomb_pump;
+} Bomba_t;
+
+Bomba_t bomba;
+
+void draw_explosion(int x, int y) {
+    GLUquadric* quadric = gluNewQuadric();
+
+    glPushMatrix();
+        glTranslatef(x, 0.5, y);
+        glColor3f(1, 0.5, 0);
+        float scaleFactor = (bomba.bomb_pump - 100) / 30.0f;
+        glScalef(scaleFactor, scaleFactor, scaleFactor);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, names[3]);
+        gluQuadricTexture(quadric, GL_TRUE);
+
+        gluSphere(quadric, 1.0, 20, 20);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+}
+
+void explosion(int x, int y){
+	draw_explosion(x,y);
+	if(fabsf(x * 10 - bomberman.x) <= 5 && fabsf(y * 10 - bomberman.z) <= 5) {
+			game_over = 4;
+			animation_ongoing = 0;
+		}
+	destroy_block[x+1][y+1] = 0;
+	if(destroy_block[x+2][y+1] != 1){
+		draw_explosion(x+1,y);
+		if(fabsf((x+1) * 10 - bomberman.x) <= 5 && fabsf(y * 10 - bomberman.z) <= 5) {
+			game_over = 4;
+			animation_ongoing = 0;
+		}
+		if(fabsf((x+1) * 10 - sphereWithSpikes1.x) <= 5 && fabsf(y * 10 - sphereWithSpikes1.z) <= 5) {
+			sphereWithSpikes1.alive = 0;
+		}
+		if(fabsf((x+1) * 10 - sphereWithSpikes2.x) <= 5 && fabsf(y * 10 - sphereWithSpikes2.z) <= 5) {
+			sphereWithSpikes2.alive = 0;
+		}
+		destroy_block[x+2][y+1] = 0;
+	}
+	if(destroy_block[x][y+1] != 1){
+		draw_explosion(x-1,y);
+		if(fabsf((x-1) * 10 - bomberman.x) <= 5 && fabsf(y * 10 - bomberman.z) <= 5) {
+			game_over = 4;
+			animation_ongoing = 0;
+		}
+		if(fabsf((x-1) * 10 - sphereWithSpikes1.x) <= 5 && fabsf(y * 10 - sphereWithSpikes1.z) <= 5) {
+			sphereWithSpikes1.alive = 0;
+		}
+		if(fabsf((x-1) * 10 - sphereWithSpikes2.x) <= 5 && fabsf(y * 10 - sphereWithSpikes2.z) <= 5) {
+			sphereWithSpikes2.alive = 0;
+		}
+		destroy_block[x][y+1] = 0;
+	}
+	if(destroy_block[x+1][y+2] != 1){
+		draw_explosion(x,y+1);
+		if(fabsf(x * 10 - bomberman.x) <= 5 && fabsf((y+1) * 10 - bomberman.z) <= 5) {
+			game_over = 4;
+			animation_ongoing = 0;
+		}
+		if(fabsf(x * 10 - sphereWithSpikes1.x) <= 5 && fabsf((y+1) * 10 - sphereWithSpikes1.z) <= 5) {
+			sphereWithSpikes1.alive = 0;
+		}
+		if(fabsf(x * 10 - sphereWithSpikes2.x) <= 5 && fabsf((y+1) * 10 - sphereWithSpikes2.z) <= 5) {
+			sphereWithSpikes2.alive = 0;
+		}
+		destroy_block[x+1][y+2] = 0;
+	}
+	if(destroy_block[x+1][y] != 1){
+		draw_explosion(x,y-1);
+		if(fabsf(x * 10 - bomberman.x) <= 5 && fabsf((y-1) * 10 - bomberman.z) <= 5) {
+			game_over = 4;
+			animation_ongoing = 0;
+		}
+		if(fabsf(x * 10 - sphereWithSpikes1.x) <= 5 && fabsf((y-1) * 10 - sphereWithSpikes1.z) <= 5) {
+			sphereWithSpikes1.alive = 0;
+		}
+		if(fabsf(x * 10 - sphereWithSpikes2.x) <= 5 && fabsf((y-1) * 10 - sphereWithSpikes2.z) <= 5) {
+			sphereWithSpikes2.alive = 0;
+		}
+		destroy_block[x+1][y] = 0;
+	}
+}
+
+void draw_bomb(){
+    glPushMatrix();
+	    if(bomba.bomb_pump > 100){
+		    explosion(bomba.x,bomba.z);
+		    if(bomba.bomb_pump >= 130){
+			    bomba.bomb_pump = 0;
+			    bomba.ind = 0;
+			    bomba.x = -1;
+			    bomba.z = -1;
+			}
+		} else {
+		    glTranslatef(bomba.x,0.5,bomba.z);
+		    glColor3f(.7,0,0);
+		    glutSolidSphere(0.4+cos((bomba.bomb_pump)/5)*0.05,20,20);
+		}
+    glPopMatrix();
+}
+
 // =================================== FIM =================================== //
 
 // =================================== MAP =================================== //
-
-static int destroy_block[17][13];
 
 void RandomWalls(void){
     srand(time(0));
@@ -964,14 +1091,18 @@ void Timer(int id){
 			ID = 4;
 			bomberman.new_direction = 1.0;
 		}
-	}
+    }
+
+    if(bomba.ind == 1){
+        bomba.bomb_pump++;
+    }
 
     sphereWithSpikes_count++;
 	sphereWithSpikes_param = PI*sin(sphereWithSpikes_count);
 	
 	if(sphereWithSpikes1.alive) {
 		EnemyWalk(&sphereWithSpikes1);
-		if(abs(sphereWithSpikes1.x - bomberman.x) <= 5 && abs(sphereWithSpikes1.z - bomberman.z) <= 5) {
+		if(fabsf(sphereWithSpikes1.x - bomberman.x) <= 5 && fabsf(sphereWithSpikes1.z - bomberman.z) <= 5) {
 			// game_over = 2;
 			animation_ongoing = 0;
 		}
@@ -979,7 +1110,7 @@ void Timer(int id){
 
 	if(sphereWithSpikes2.alive){
 		EnemyWalk(&sphereWithSpikes2);
-		if(abs(sphereWithSpikes2.x - bomberman.x) <= 5 && abs(sphereWithSpikes2.z - bomberman.z) <= 5) {
+		if(fabsf(sphereWithSpikes2.x - bomberman.x) <= 5 && fabsf(sphereWithSpikes2.z - bomberman.z) <= 5) {
 			// game_over = 2;
 			animation_ongoing = 0;
 		}
@@ -1061,6 +1192,10 @@ void keyboard(unsigned char key, int x, int y){
             move = 0.0;
             sphereWithSpikes2.alive = 1;
             sphereWithSpikes1.alive = 1;
+            bomba.bomb_pump = 0;
+			bomba.ind = 0;
+			bomba.x = -1;
+			bomba.z = -1;
             RandomWalls();
 			glutPostRedisplay();
             break;
@@ -1107,7 +1242,12 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 32:
             //SPACE = Arma Bomba
-
+            if(animation_ongoing==1 && bomba.ind == 0){
+			    bomba.ind = 1;
+				bomba.x = round(bomberman.x/10);
+				bomba.z = round(bomberman.z/10);
+				destroy_block[bomba.x+1][bomba.z+1] = 1;
+			}
             break;
     }
 }
@@ -1175,11 +1315,19 @@ void display(){
 
 	glPushMatrix();
 		DrawMap();
-	glPopMatrix();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 
     glPushMatrix();
         Bomberman(0.1, 0.1, 0.1);
     glPopMatrix();
+
+    if(bomba.ind == 1){
+        glPushMatrix();
+        glColor3f(0.7, 0, 0);
+        draw_bomb();
+        glPopMatrix();
+    }
 
     glPushMatrix();
 		if(sphereWithSpikes1.alive){
@@ -1231,11 +1379,15 @@ void init(){
 	sphereWithSpikes1.alive = 1;
 	sphereWithSpikes2.alive = 1;
 
-    //Bomb
+    // Inicializando a bomba
+    bomba.x = -1;
+	bomba.z = -1;
+	bomba.ind = 0;
+	bomba.bomb_pump = 0;
     
     // glShadeModel(GL_SMOOTH);
     RandomWalls();
-    InitializeTexture();	
+    InitializeTexture();
     loadTexture(); 
 
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
