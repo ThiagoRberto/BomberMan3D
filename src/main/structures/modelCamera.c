@@ -29,9 +29,22 @@ void lightning()
 void configCamera(void) {
     glMatrixMode(GL_MODELVIEW); //define que a matrix é a model view
     glLoadIdentity(); //carrega a matrix de identidade
-    gluLookAt(0.0 + d_lados, 2.0, 4.8 + d_frente,   //posição da câmera
-        0.0 + v_lados + d_lados, 0.6 + v_vertical, 0.0 + d_frente,   //para onde a câmera aponta
-        0.0, 1.0, 0.0);  //vetor view-up
+
+    float xp0, yp0, zp0;
+    float xN, yN, zN;
+    xp0 = 0.0 + d_lados;
+    yp0 = 0.0;
+    zp0 = 5.0 + d_frente;
+
+    xN = d_lados;
+    yN = v_vertical;
+    zN = d_frente;
+
+    gluLookAt(xp0, yp0, zp0, //P0 - posição da câmera
+        ((zN - zp0) * sin(v_lados) - (xN - xp0) * cos(v_lados)) + xp0, // rotacao do ponto em torno de y
+        yN,
+        ((zN - zp0) * cos(v_lados) - (xN - xp0) * sin(v_lados)) + zp0, //para onde a câmera aponta
+        0.0, 1.0, 0.0); //vetor view-up
 }
 
 void init(void)
@@ -47,7 +60,8 @@ void init(void)
 
     glMatrixMode(GL_PROJECTION); //define que a matrix é a de projeção
     glLoadIdentity(); //carrega a matrix de identidade
-    gluPerspective(25.0, 1.0, 2.0, 8.0); //define uma projeção perspectiva
+    // angulo, aspect-tamanho, dist de P0 inicio da visao,  dist de P0 fim da visao
+    gluPerspective(25.0, 1.0, 2.0, 25.0); //define uma projeção perspectiva
     glViewport(0, 0, 500, 500);
     quadratic = gluNewQuadric();
     lightning();

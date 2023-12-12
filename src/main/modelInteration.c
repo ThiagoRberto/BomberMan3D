@@ -98,43 +98,35 @@ void keyboard(unsigned char key, int x, int y) {
         z = 1.0;
         break;
     case  '4':
-        v_lados -= 0.3;
-        // printf("4: %0.2f\t", v_lados);
+        v_lados += 0.03;
         configCamera();
         break;
     case  '6':
-        v_lados += 0.3;
-        // printf("6: %0.2f\t", v_lados);
+        v_lados -= 0.03;
         configCamera();
         break;
     case  '8':
-        v_vertical -= 0.1;
-        // printf("8: %0.2f\t", v_vertical);
+        v_vertical += 0.1;
         configCamera();
         break;
     case  '2':
-        v_vertical += 0.1;
-        // printf("2: %0.2f\t", v_vertical);
+        v_vertical -= 0.1;
         configCamera();
         break;
     case  '7':
         d_lados -= 0.1;
-        // printf("0: %0.2f\t", d_lados);
         configCamera();
         break;
     case  '9':
         d_lados += 0.1;
-        // printf("1: %0.2f\t", d_lados);
         configCamera();
         break;
     case  '1':
         d_frente -= 0.1;
-        // printf("0: %0.2f\t", d_lados);
         configCamera();
         break;
     case  '0':
         d_frente += 0.1;
-        // printf("1: %0.2f\t", d_lados);
         configCamera();
         break;
     default:
