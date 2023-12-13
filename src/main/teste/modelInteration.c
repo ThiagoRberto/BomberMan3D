@@ -1,5 +1,5 @@
 #include "modelOne.h"
-#include "../structures/structures.h"
+#include "../settings/structures.h"
 
 void running(int value) {
     if (stop) {

@@ -1,6 +1,6 @@
 #include "global.h"
 #include "interation.h"
-#include "./structures/structures.h"
+#include "./settings/structures.h"
 
 
 void running(int value) {

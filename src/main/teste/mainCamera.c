@@ -1,5 +1,5 @@
 #include "../global.h"
-#include "../structures/structures.h"
+#include "../settings/structures.h"
 #include "../interation.h"
 #include "modelAmbientSimple.h"
 

@@ -11,7 +11,6 @@
 FLAGSW= -lopengl32 -lglu32 -lfreeglut -lwinmm -lgdi32
 FLAGSL= -lglut -lGL -lGLU -lm
 
-
 D= $(if $(filter $(OS),Windows_NT),\,/)
 RM= $(if $(filter $(OS),Windows_NT),del /Q,rm -rf)
 FLAGS= $(if $(filter $(OS),Windows_NT),$(FLAGSW), $(FLAGSL))
@@ -21,13 +20,12 @@ SOILC= $(N)SOIL.c  $(N)image_helper.c $(N)image_DXT.c $(N)stb_image_aug.c
 
 DIRHOME= .$(D)src$(D)main$(D)
 PATHCharacter=  $(DIRHOME)characters$(D)mainCharacter.c
-PATHCamera= $(DIRHOME)structures$(D)modelCamera.c
+PATHCamera= $(DIRHOME)settings$(D)modelCamera.c
 CC= gcc
 #To tests
 DIR_TEST= $(DIRHOME)teste$(D)
-
 ####################### Objetos #######################
-all: game
+all: testeGame
 
 executeArq: exe.o
 	.$(D)exe.o
@@ -38,10 +36,16 @@ gameArq: $(DIRHOME)MainGame.c $(SOILC)
 	$(CC) $^ $(FLAGS) -o exe.o
 		@ echo ' '
 
+testeGame: testeGameArq executeArq
+
+testeGameArq: $(DIR_TEST)MainGame.c $(SOILC)
+	$(CC) $^ $(FLAGS) -o exe.o
+		@ echo ' '
+
 character: characterArq executeArq
 
 characterArq:
-	gcc $(PATHCharacter) $(FLAGS) -o exe.o	
+	$(CC) $(PATHCharacter) $(FLAGS) -o exe.o	
 	@ echo ' '
 
 teste: testeArq executeArq 
@@ -67,8 +71,11 @@ clean:
 	@ echo "Limpeza realizada"
 
 help:
+	@ echo "Se for windows troque 'make' por 'mingw32-make.exe -f makefile'"
+	@ echo " "
 	@ echo "Funcoes para visualizacao disponiveis:"
 	@ echo " "
+	@ echo "make 	 		-> O mesmo que make all e make game" 
 	@ echo "make game 		-> Ver a integracao do game" 	
 	@ echo "make character 		-> Personagem" 
 	@ echo "make teste		-> Teste arquivos separados" 

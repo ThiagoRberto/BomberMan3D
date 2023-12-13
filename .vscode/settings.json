@@ -12,5 +12,9 @@
         "Program.exe": true
     },
     "run.inputFile": "${workspaceFolder}\\Input.txt",
-    "run.outputFile": "${workspaceFolder}\\Output.txt"
+    "run.outputFile": "${workspaceFolder}\\Output.txt",
+    "files.associations": {
+        "interation.h": "c",
+        "modelambientsimple.h": "c"
+    }
 }

@@ -1,4 +1,4 @@
-#include "../structures/structures.h"
+#include "../settings/structures.h"
 #include "modelOne.h"
 #include "character.h"
 
