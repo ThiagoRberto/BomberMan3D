@@ -7,7 +7,7 @@
 #include <time.h>
 #include <assert.h>
 #include <GL/glut.h>
-#include <SOIL/SOIL.h>
+#include "../../build/SOIL/SOIL.h"
 
 #define TIMER_INTERVAL 25
 #define PI 3.14159265358979323846
@@ -26,15 +26,15 @@ float animation_ongoing = 0;
 static GLuint names[4];
 static int destroy_block[17][13];
 
-typedef struct {
+typedef struct bitmapfile {
   unsigned short type;
   unsigned int size;
   unsigned short reserved1;
   unsigned short reserved2;
   unsigned int offsetbits;
-} BITMAPFILEHEADER;
+} BITMAPFILEHEADER1;
 
-typedef struct {
+typedef struct bitmapfolder{
   unsigned int size;
   unsigned int width;
   unsigned int height;
@@ -46,7 +46,7 @@ typedef struct {
   int ypelspermeter;
   unsigned int colorsused;
   unsigned int colorsimportant;
-} BITMAPINFOHEADER;
+} BITMAPINFOHEADER2;
 
 typedef struct Image {
   int width, height; 
@@ -81,8 +81,8 @@ void image_done(Image *image) {
 
 void image_read(Image *image, char *filename) {
   FILE *file;
-  BITMAPFILEHEADER bfh;
-  BITMAPINFOHEADER bih;
+  BITMAPFILEHEADER1 bfh;
+  BITMAPINFOHEADER2 bih;
   unsigned int i;
   unsigned char r, g, b, a;
 

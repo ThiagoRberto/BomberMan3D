@@ -8,12 +8,16 @@
 #
 # (Troque nome_da_regra por help por exemplo)
 ####################### Macros #######################
-FLAGSW= -lopengl32 -lglu32 -lfreeglut -lwinmm -lgdi32 
-FLAGSL= -lglut -lGL -lGLU -lm 
+FLAGSW= -lopengl32 -lglu32 -lfreeglut -lwinmm -lgdi32
+FLAGSL= -lglut -lGL -lGLU -lm -lSOIL
+
 
 D= $(if $(filter $(OS),Windows_NT),\,/)
 RM= $(if $(filter $(OS),Windows_NT),del /Q,rm -rf)
 FLAGS= $(if $(filter $(OS),Windows_NT),$(FLAGSW), $(FLAGSL))
+
+N= .$(D)build$(D)
+SOILC= $(N)SOIL.c  $(N)image_helper.c $(N)image_DXT.c $(N)stb_image_aug.c
 
 DIRHOME= .$(D)src$(D)main$(D)
 PATHCharacter=  $(DIRHOME)characters$(D)mainCharacter.c
@@ -23,10 +27,16 @@ CC= gcc
 DIR_TEST= $(DIRHOME)teste$(D)
 
 ####################### Objetos #######################
-all: help
+all: game
 
 executeArq: exe.o
 	.$(D)exe.o
+
+game: gameArq executeArq
+
+gameArq: $(DIRHOME)MainGame.c $(SOILC)
+	$(CC) $^ $(FLAGS) -o exe.o
+		@ echo ' '
 
 character: characterArq executeArq
 
@@ -58,12 +68,12 @@ clean:
 
 help:
 	@ echo "Funcoes para visualizacao disponiveis:"
-	@ echo " "	
-	@ echo "make character 	-> Personagem" 
+	@ echo " "
+	@ echo "make game 		-> Ver a integracao do game" 	
+	@ echo "make character 		-> Personagem" 
 	@ echo "make teste		-> Teste arquivos separados" 
 	@ echo "make two		-> Camera e personagem" 
 	@ echo "make camera		-> Teste camera "
 	@ echo " "
-
-	@ echo "make clean 	-> Limpeza de executaveis" 
+	@ echo "make clean 		-> Limpeza de executaveis" 
 	@ echo ' '
