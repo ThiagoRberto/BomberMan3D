@@ -25,7 +25,7 @@ float animation_ongoing = 0;
 
 float d_frente = 0.0;
 float d_lados = 0.00;
-float v_vertical = 0.0;
+float v_vertical = -1.25;
 float v_lados = 0.0;
 
 
@@ -1495,7 +1495,7 @@ void configCamera(void) {
         ((zN - zp0) * cos(v_lados) - (xN - xp0) * sin(v_lados)) + zp0, //para onde a câmera aponta
         0.0, 1.0, 0.0); //vetor view-up
 
-    printf("camera em x: %0.2f y: %0.2f z:%0.2f \n", xp0, yp0, zp0);
+    printf("camera em x: %0.2f y: %0.2f z:%0.2f \n", xN, yN, zN);
 }
 
 
@@ -1553,7 +1553,7 @@ void display() {
         glBindTexture(GL_TEXTURE_2D, 0);
 
         glPushMatrix(); //to camera
-        glTranslatef(0.0, -1.0, 0.0);
+        glTranslatef(0.0, -3.5, 0.0);
 
         glPushMatrix();
         DrawMap();
