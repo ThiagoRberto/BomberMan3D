@@ -3,13 +3,13 @@
 # se for windows, abra o powershell ou cmd e digite os comandos:
 #		mingw32-make.exe -f makefile nome_da_regra
 #
-# se for linux, altere os includes dos testes... abra o terminal e digite o comando:
+# se for linux, abra o terminal e digite o comando:
 # 		make nome_da_regra
 #
 # (Troque nome_da_regra por help por exemplo)
 ####################### Macros #######################
 FLAGSW= -lopengl32 -lglu32 -lfreeglut -lwinmm -lgdi32
-FLAGSL= -lglut -lGL -lGLU -lm -lSOIL
+FLAGSL= -lglut -lGL -lGLU -lm
 
 
 D= $(if $(filter $(OS),Windows_NT),\,/)
