@@ -7,7 +7,7 @@
 #include <time.h>
 #include <assert.h>
 #include <GL/glut.h>
-#include "../../../build/SOIL/SOIL.h"
+#include "../../build/SOIL/SOIL.h"
 
 #define TIMER_INTERVAL 25
 #define PI 3.14159265358979323846
@@ -23,18 +23,17 @@ float gametime = 300;
 float sphereWithSpikes_count = 0;
 float animation_ongoing = 0;
 
-float d_frente = 0.0;
+static GLuint names[4];
+static int destroy_block[17][13];
+
+float d_frente = -0.70;
 float d_lados = 0.00;
 float v_vertical = -1.25;
 float v_lados = 0.0;
 
+void configCamera(void);
 
-static GLuint names[4];
-static int destroy_block[17][13];
-
-void configCamera();
-
-typedef struct bitmapfile {
+typedef struct {
     unsigned short type;
     unsigned int size;
     unsigned short reserved1;
@@ -42,7 +41,7 @@ typedef struct bitmapfile {
     unsigned int offsetbits;
 } BITMAPFILEHEADER1;
 
-typedef struct bitmapfolder {
+typedef struct {
     unsigned int size;
     unsigned int width;
     unsigned int height;
@@ -55,6 +54,7 @@ typedef struct bitmapfolder {
     unsigned int colorsused;
     unsigned int colorsimportant;
 } BITMAPINFOHEADER2;
+
 
 typedef struct Image {
     int width, height;
@@ -1397,31 +1397,6 @@ void keyboard(unsigned char key, int x, int y) {
             destroy_block[bomba.x + 1][bomba.z + 1] = 1;
         }
         break;
-    }
-}
-
-void keyboardUp(unsigned char key, int x, int y) {
-    switch (key) {
-    case 'W':
-    case 'w':
-        KEY_DOWN_W = 0;
-        KEY_DOWN--;
-        break;
-    case 'S':
-    case 's':
-        KEY_DOWN_S = 0;
-        KEY_DOWN--;
-        break;
-    case 'A':
-    case 'a':
-        KEY_DOWN_A = 0;
-        KEY_DOWN--;
-        break;
-    case 'D':
-    case 'd':
-        KEY_DOWN_D = 0;
-        KEY_DOWN--;
-        break;
     case  '4':
         v_lados += 0.03;
         configCamera();
@@ -1463,6 +1438,32 @@ void keyboardUp(unsigned char key, int x, int y) {
         glutPostRedisplay();
         break;
     }
+
+}
+
+void keyboardUp(unsigned char key, int x, int y) {
+    switch (key) {
+    case 'W':
+    case 'w':
+        KEY_DOWN_W = 0;
+        KEY_DOWN--;
+        break;
+    case 'S':
+    case 's':
+        KEY_DOWN_S = 0;
+        KEY_DOWN--;
+        break;
+    case 'A':
+    case 'a':
+        KEY_DOWN_A = 0;
+        KEY_DOWN--;
+        break;
+    case 'D':
+    case 'd':
+        KEY_DOWN_D = 0;
+        KEY_DOWN--;
+        break;
+    }
 }
 
 void reshape(int width, int height) {
@@ -1474,7 +1475,6 @@ void reshape(int width, int height) {
     glutFullScreen();
 }
 
-
 void configCamera(void) {
     glMatrixMode(GL_MODELVIEW); //define que a matrix é a model view
     glLoadIdentity(); //carrega a matrix de identidade
@@ -1483,7 +1483,7 @@ void configCamera(void) {
     float xN, yN, zN;
     xp0 = 0.1 + d_lados; //0.1
     yp0 = 0.0;
-    zp0 = -1.8 + d_frente; //-1.3
+    zp0 = -2.0 + d_frente; //-1.3
 
     xN = d_lados;
     yN = v_vertical;
@@ -1495,9 +1495,9 @@ void configCamera(void) {
         ((zN - zp0) * cos(v_lados) - (xN - xp0) * sin(v_lados)) + zp0, //para onde a câmera aponta
         0.0, 1.0, 0.0); //vetor view-up
 
-    printf("camera em x: %0.2f y: %0.2f z:%0.2f \n", xN, yN, zN);
+    printf("camera em x: %0.2f y: %0.2f z:%0.2f \n", xp0, yp0, zp0);
+    printf("camera vendo x: %0.2f y: %0.2f z:%0.2f \n", xN, yN, zN);
 }
-
 
 void display() {
     if (game_over != 0) {
@@ -1533,6 +1533,9 @@ void display() {
         // gluLookAt(7, 15, 10, 7, 0, 5, 0, 1, 0);
         configCamera();
 
+        glPushMatrix(); //Permitir movimento da camera
+        glTranslatef(0.0, -4.0, 0.0);
+
         //Base do Mapa
         glBindTexture(GL_TEXTURE_2D, names[0]);
         glBegin(GL_QUADS);
@@ -1551,9 +1554,6 @@ void display() {
         glVertex3f(-1, 0, 11);
         glEnd();
         glBindTexture(GL_TEXTURE_2D, 0);
-
-        glPushMatrix(); //to camera
-        glTranslatef(0.0, -3.5, 0.0);
 
         glPushMatrix();
         DrawMap();
@@ -1583,8 +1583,7 @@ void display() {
             glPopMatrix();
         }
         glPopMatrix();
-
-        glPopMatrix(); //to camera
+        glPopMatrix();
     }
 
     glutSwapBuffers();
